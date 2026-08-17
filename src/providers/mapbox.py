@@ -19,12 +19,13 @@ def fetch_corridor(corridor: Corridor, token: str) -> dict:
         f"{corridor.origin.lon},{corridor.origin.lat};"
         f"{corridor.destination.lon},{corridor.destination.lat}"
     )
+    # `annotations` is incompatible with overview=false, and nothing downstream
+    # reads the per-leg arrays, so it is omitted to keep the payload small.
     payload = get_json(
         f"{BASE_URL}/{coords}",
         params={
             "access_token": token,
             "overview": "false",
-            "annotations": "duration,congestion",
             "alternatives": "false",
         },
     )
@@ -35,13 +36,15 @@ def fetch_corridor(corridor: Corridor, token: str) -> dict:
 
     route = routes[0]
     live_s = float(route["duration"])
-    # duration_typical is only present on the driving-traffic profile.
-    typical_s = float(route.get("duration_typical") or live_s)
+    raw_typical = route.get("duration_typical")
+    # Defaulting a missing typical duration to the live one would record a
+    # congestion ratio of exactly 1.0 and quietly corrupt the baseline.
+    typical_s = float(raw_typical) if raw_typical else None
 
     return {
         "provider": PROVIDER,
         "duration_live_s": round(live_s, 1),
-        "duration_typical_s": round(typical_s, 1),
+        "duration_typical_s": round(typical_s, 1) if typical_s else None,
         "distance_m": round(float(route["distance"]), 1),
         "congestion_ratio": round(live_s / typical_s, 4) if typical_s else None,
     }
