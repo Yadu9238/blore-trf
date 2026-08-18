@@ -1,13 +1,8 @@
 {
-  "last_run_id": "20260818T144559Z",
-  "last_run_utc": "2026-08-18T14:45:59.909688+00:00",
+  "last_run_id": "20260818T153619Z",
+  "last_run_utc": "2026-08-18T15:36:19.593870+00:00",
   "corridors_total": 16,
-  "corridors_captured": 15,
-  "failures": [
-    {
-      "corridor_id": "hebbal_krpuram",
-      "error": "No route returned for hebbal_krpuram"
-    }
-  ],
-  "healthy": false
+  "corridors_captured": 16,
+  "failures": [],
+  "healthy": true
 }
